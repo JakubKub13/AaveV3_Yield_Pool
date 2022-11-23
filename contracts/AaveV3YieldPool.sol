@@ -68,4 +68,8 @@ contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
 
         emit AaveV3YieldPoolInitialized(_aToken, _rewardsController, _poolAddressesProviderRegistry, _name, _symbol, decimals_, _owner);
     }
+
+    function _pool() internal view returns (IPool) {
+        return IPool(IPoolAddressesProvider(poolAddressesProviderRegistry.getAddressesProvidersList()[ADDRESSES_PROVIDER_ID]).getPool());
+    }
 }
