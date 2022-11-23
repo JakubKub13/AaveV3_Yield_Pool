@@ -90,6 +90,17 @@ contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
 
     }
 
+    /**
+     * @notice Function calculates the price of a full share
+     * @dev This calculation is used to ensure that the price per share can not be manipulated
+     * @return The current price per share
+     */
+    function _pricePerShare() internal view returns (uint256) {
+        uint256 _supply = totalSupply();
+        // pricePerShare = (token * yieldPoolBalanceOfAToken) / totalSupply
+        return _supply == 0 ? _tokenUnit : (_tokenUnit * aToken.balanceOf(address(this))) / _supply;
+    }
+
     function _pool() internal view returns (IPool) {
         return IPool(IPoolAddressesProvider(poolAddressesProviderRegistry.getAddressesProvidersList()[ADDRESSES_PROVIDER_ID]).getPool());
     }
