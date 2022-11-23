@@ -12,3 +12,28 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import { Manageable, Ownable } from "./Manageable.sol";
 import { IYieldPool } from "./IYieldPool.sol";
+
+contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
+    using SafeERC20 for IERC20;
+
+    // State vars
+    IAToken public immutable aToken;
+    IRewardsController public immutable rewardsController;
+    IPoolAddressesProviderRegistry public immutable poolAddressesProviderRegistry;
+    address private immutable _tokenAddress;
+    uint256 private immutable _tokenUnit;
+    uint8 private immutable _decimals;
+    uint256 private constant ADDRESSES_PROVIDER_ID = uint256(0);
+    // uint16 private constant REFERRAL_CODE = uint16(0);
+
+    // Events
+    event AaveV3YieldPoolInitialized(
+        IAToken indexed aToken,
+        IRewardsController rewardsController, 
+        IPoolAddressesProviderRegistry poolAddressesProviderRegistry, 
+        string name, string symbol, 
+        uint8 decimals, 
+        address indexed owner);
+
+    event
+}
