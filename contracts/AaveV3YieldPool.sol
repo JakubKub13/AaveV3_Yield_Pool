@@ -97,6 +97,7 @@ contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
 
     function supplyTokenTo(uint256 _depositAmount, address _to) external override nonReentrant {
         uint256 _shares = _tokenToShares(_depositAmount, _pricePerShare());
+        _requireSharesGreaterThanZero(_shares);
     }
 
     /**
@@ -110,6 +111,13 @@ contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
         return _shares == 0 ? _shares : (_shares * _fullShare) / _tokenUnit;
     }
 
+
+    /**
+     * @notice This function calculates the number of shares that should be minted or burnt when user deposit or withdraw asset tokens
+     * @param _tokens Amount of asset tokens
+     * @param _fullShare Price of a full share
+     * @return Number of shares
+     */
     function _tokenToShares(uint256 _tokens, uint256 _fullShare) internal view returns (uint256) {
         // shares = (tokens * totalSuppply) / yieldPoolBalanceOfAToken
         return _tokens == 0 ? _tokens : (_tokens * _tokenUnit) / _fullShare;
@@ -124,6 +132,10 @@ contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
         uint256 _supply = totalSupply();
         // pricePerShare = (token * yieldPoolBalanceOfAToken) / totalSupply
         return _supply == 0 ? _tokenUnit : (_tokenUnit * aToken.balanceOf(address(this))) / _supply;
+    }
+
+    function _requireSharesGreaterThanZero(uint256 _shares) internal pure {
+        require(_shares > 0, "AaveV3YieldPool: Shares must be greater than zero");
     }
 
     function _pool() internal view returns (IPool) {
