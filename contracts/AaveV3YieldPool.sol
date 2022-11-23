@@ -113,7 +113,21 @@ contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
     }
 
     function redeemToken(uint256 _redeemAmount) external override nonReentrant returns (uint256) {
-        
+        uint256 _shares = _tokenToShares(_redeemAmount, _pricePerShare());
+        _requireSharesGreaterThanZero(_shares);
+        _burn(msg.sender, _shares);
+        IERC20 _assetToken = IERC20(_tokenAddress);
+        uint256 _beforeBalance = _assetToken.balanceOf(address(this));
+        _pool().withdraw(_tokenAddress, _redeemAmount, address(this));
+        uint256 _balanceDifference;
+
+        unchecked {
+            _balanceDifference = _assetToken.balanceOf(address(this)) - _beforeBalance;
+        }
+
+        _assetToken.safeTransfer(msg.sender, _balanceDifference);
+        emit RedeemedToken(msg.sender, _shares, _redeemAmount);
+        return _balanceDifference;
     }
 
     /**
