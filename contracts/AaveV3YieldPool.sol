@@ -79,6 +79,14 @@ contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
     }
 
     /**
+     * @notice The address of ERC20 asset token user used for deposits
+     * @return ERC20 asset token address
+     */
+    function depositToken() public view override returns (address) {
+        return _tokenAddress;
+    }
+
+    /**
      * @notice Calculates the number of asset tokens that user has in the yield pool
      * @param _shares Amount of shares
      * @param _fullShare Price of a full share
@@ -87,7 +95,6 @@ contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
     function _sharesToToken(uint256 _shares, uint256 _fullShare) internal view returns (uint256) {
         // tokens = (shares * yieldPoolBalanceOfAToken) / totalSupply;
         return _shares == 0 ? _shares : (_shares * _fullShare) / _tokenUnit;
-
     }
 
     /**
