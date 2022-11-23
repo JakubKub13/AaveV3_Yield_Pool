@@ -112,6 +112,13 @@ contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
         emit SuppliedTokenTo(msg.sender, _shares, _depositAmount, _to);
     }
 
+    /**
+     * @notice withdraws asset token from yield pool
+     * @dev _shares corresponding to the number of tokens withdrawn are burnt from the user's balance
+     * @dev asset tokens are withdrawn from Aave and than transferred from yield pool to user's address
+     * @param _redeemAmount -> amount of asset tokens to be withdrawn
+     * @return Amount of asset tokens that were withdrawn
+     */
     function redeemToken(uint256 _redeemAmount) external override nonReentrant returns (uint256) {
         uint256 _shares = _tokenToShares(_redeemAmount, _pricePerShare());
         _requireSharesGreaterThanZero(_shares);
@@ -128,6 +135,14 @@ contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
         _assetToken.safeTransfer(msg.sender, _balanceDifference);
         emit RedeemedToken(msg.sender, _shares, _redeemAmount);
         return _balanceDifference;
+    }
+
+    function claimRewards(address _to) external onlyManagerOrOwner {
+        require(_to != address(0), "AaveV3YieldPool: Can not claim rewards to address 0");
+        address[] memory _assets = new address[](1);
+        _assets[0] = address(aToken);
+        (address[] memory _rewardsList, uint256[] memory _claimedAmounts) = rewardsController.claimAllRewards(_assets, _to);
+        emit Claimed(msg.sender, _to, _rewardsList, _claimedAmounts);
     }
 
     /**
