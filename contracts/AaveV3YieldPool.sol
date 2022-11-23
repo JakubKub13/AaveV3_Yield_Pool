@@ -56,6 +56,16 @@ contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
         require(decimals_ > 0, "AaveV3YieldPool: Decimals can not be 0");
         require(address(_rewardsController) != address(0), "AaveV3YieldPool: Rewards controller can not be address 0");
         require(address(_poolAddressesProviderRegistry) != address(0), "AaveV3YieldPool: Addresses provider can not be address 0");
-        
+
+        aToken = _aToken;
+        _decimals = decimals_;
+        _tokenUnit = 10**decimals_;
+        _tokenAddress = address(_aToken.UNDERLYING_ASSET_ADDRESS());
+        rewardsController = _rewardsController;
+        poolAddressesProviderRegistry = _poolAddressesProviderRegistry;
+
+        IERC20(_tokenAddress).safeApprove(address(_pool()), type(uint256).max);
+
+        emit AaveV3YieldPoolInitialized(_aToken, _rewardsController, _poolAddressesProviderRegistry, _name, _symbol, decimals_, _owner);
     }
 }
