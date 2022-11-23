@@ -87,6 +87,19 @@ contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
     }
 
     /**
+     * @notice yield pool ERC20 decimals
+     * @dev This value should be equal to the decimals of the token used to deposit into the pool
+     * @return number of decimals
+     */
+    function decimals() public view virtual override returns (uint8) {
+        return _decimals;
+    }
+
+    function supplyTokenTo(uint256 _depositAmount, address _to) external override nonReentrant {
+        uint256 _shares = _tokenToShares(_depositAmount, _pricePerShare());
+    }
+
+    /**
      * @notice Calculates the number of asset tokens that user has in the yield pool
      * @param _shares Amount of shares
      * @param _fullShare Price of a full share
@@ -95,6 +108,11 @@ contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
     function _sharesToToken(uint256 _shares, uint256 _fullShare) internal view returns (uint256) {
         // tokens = (shares * yieldPoolBalanceOfAToken) / totalSupply;
         return _shares == 0 ? _shares : (_shares * _fullShare) / _tokenUnit;
+    }
+
+    function _tokenToShares(uint256 _tokens, uint256 _fullShare) internal view returns (uint256) {
+        // shares = (tokens * totalSuppply) / yieldPoolBalanceOfAToken
+        return _tokens == 0 ? _tokens : (_tokens * _tokenUnit) / _fullShare;
     }
 
     /**
