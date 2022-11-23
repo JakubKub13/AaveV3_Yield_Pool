@@ -95,6 +95,13 @@ contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
         return _decimals;
     }
 
+    /**
+     * @notice This function supplies asset token to the yield pool
+     * @dev _shares corresponding to the number of tokens supplied are minted to the user's balance
+     * @dev asset tokens are supplied to the yield pool and than deposited into Aave
+     * @param _depositAmount -> amount of asset tokens to be supplied
+     * @param _to -> User who will receive the shares
+     */
     function supplyTokenTo(uint256 _depositAmount, address _to) external override nonReentrant {
         uint256 _shares = _tokenToShares(_depositAmount, _pricePerShare());
         uint16 _refferalCode = 0;
@@ -103,6 +110,10 @@ contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
         _pool().supply(_tokenAddress, _depositAmount, address(this), _refferalCode);
         _mint(_to, _shares);
         emit SuppliedTokenTo(msg.sender, _shares, _depositAmount, _to);
+    }
+
+    function redeemToken(uint256 _redeemAmount) external override nonReentrant returns (uint256) {
+        
     }
 
     /**
