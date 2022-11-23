@@ -35,5 +35,10 @@ contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
         uint8 decimals, 
         address indexed owner);
 
-    event
+    event SuppliedTokenTo(address indexed from, uint256 shares, uint256 amount, address indexed to);
+    event RedeemedToken(address indexed from, uint256 shares, uint256 amount);
+    event Claimed(address indexed from, address indexed to, address[] rewardsList, uint256[] claimedAmounts);
+    event DecresedERC20Allowance(address indexed from, address indexed spender, uint256 amount, IERC20 indexed token);
+    event IncreasedERC20Allowance(address indexed from, address indexed spender, uint256 amount, IERC20 indexed token);
+    event TransferredERC20(address indexed from, address indexed to, uint256 amount, IERC20 indexed token);
 }
