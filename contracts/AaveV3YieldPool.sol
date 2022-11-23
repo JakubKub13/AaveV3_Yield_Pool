@@ -97,7 +97,12 @@ contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
 
     function supplyTokenTo(uint256 _depositAmount, address _to) external override nonReentrant {
         uint256 _shares = _tokenToShares(_depositAmount, _pricePerShare());
+        uint16 _refferalCode = 0;
         _requireSharesGreaterThanZero(_shares);
+        IERC20(_tokenAddress).safeTransferFrom(msg.sender, address(this), _depositAmount);
+        _pool().supply(_tokenAddress, _depositAmount, address(this), _refferalCode);
+        _mint(_to, _shares);
+        emit SuppliedTokenTo(msg.sender, _shares, _depositAmount, _to);
     }
 
     /**
@@ -138,6 +143,10 @@ contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
         require(_shares > 0, "AaveV3YieldPool: Shares must be greater than zero");
     }
 
+    /**
+     * @notice Retrieves Aave pool address
+     * @return Reference to Pool interface
+     */
     function _pool() internal view returns (IPool) {
         return IPool(IPoolAddressesProvider(poolAddressesProviderRegistry.getAddressesProvidersList()[ADDRESSES_PROVIDER_ID]).getPool());
     }
