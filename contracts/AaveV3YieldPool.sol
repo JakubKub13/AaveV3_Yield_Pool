@@ -137,6 +137,11 @@ contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
         return _balanceDifference;
     }
 
+    /**
+     * @notice Claims accured rewards for the aToken accumulating any pending rewards
+     * @dev Can be called only by owner or manager
+     * @param _to -> address where the claimed rewards should be sent 
+     */
     function claimRewards(address _to) external onlyManagerOrOwner {
         require(_to != address(0), "AaveV3YieldPool: Can not claim rewards to address 0");
         address[] memory _assets = new address[](1);
