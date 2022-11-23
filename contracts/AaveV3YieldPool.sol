@@ -69,6 +69,27 @@ contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
         emit AaveV3YieldPoolInitialized(_aToken, _rewardsController, _poolAddressesProviderRegistry, _name, _symbol, decimals_, _owner);
     }
 
+    /**
+     * @notice Returns total balance of asset tokens with deposit and interest
+     * @param _user address to get balance for
+     * @return Balance of asset token for address
+     */
+    function balanceOfToken(address _user) external view override returns (uint256) {
+        return _sharesToToken(balanceOf(_user), _pricePerShare());
+    }
+
+    /**
+     * @notice Calculates the number of asset tokens that user has in the yield pool
+     * @param _shares Amount of shares
+     * @param _fullShare Price of a full share
+     * @return Number of asset tokens
+     */
+    function _sharesToToken(uint256 _shares, uint256 _fullShare) internal view returns (uint256) {
+        // tokens = (shares * yieldPoolBalanceOfAToken) / totalSupply;
+        return _shares == 0 ? _shares : (_shares * _fullShare) / _tokenUnit;
+
+    }
+
     function _pool() internal view returns (IPool) {
         return IPool(IPoolAddressesProvider(poolAddressesProviderRegistry.getAddressesProvidersList()[ADDRESSES_PROVIDER_ID]).getPool());
     }
