@@ -1,10 +1,10 @@
-import { Signer } from "ethers";
+import { Signer } from "@ethersproject/abstract-signer";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from 'chai';
 import { BigNumber } from 'ethers';
 import { MockContract } from 'ethereum-waffle';
 import { ethers, waffle } from 'hardhat';
-import { AaveV3YieldPool, AaveV3YieldPool__factory, AavePool, ATokenMintable, ERC20Mintable,} from "../typechain-types"
+import { AaveV3YieldPool, AaveV3YieldPool__factory, AavePool, ATokenMintable, ERC20,} from "../typechain-types"
 import IRewardsController from "../artifacts/@aave/periphery-v3/contracts/rewards/interfaces/IRewardsController.sol/IRewardsController.json";
 import IPoolAddressesProvider from "../artifacts/@aave/core-v3/contracts/interfaces/IPoolAddressesProvider.sol/IPoolAddressesProvider.json";
 //import { IPoolAddressesProviderRegistry } from "../typechain-types";
@@ -29,7 +29,7 @@ describe("AaveV3YieldPool", function () {
     let poolAddressesProviderRegistry: MockContract;
     let aaveV3YieldPool: AaveV3YieldPool
     let erc20Token: MockContract;
-    let usdcToken: ERC20Mintable;
+    let usdcToken: ERC20;
 
     let constructorTest = false;
 
@@ -72,9 +72,9 @@ describe("AaveV3YieldPool", function () {
     beforeEach(async () => {
         const { deployMockContract } = waffle;
         [contractsOwner, yieldPoolOwner, wallet2, attacker] = await getSigners();
-        const ERC20MintableContract = await getContractFactory("ERC20Mintable", contractsOwner);
+        const ERC20MintableContract = await getContractFactory("ERC20", contractsOwner);
         erc20Token = await deployMockContract(contractsOwner, SafeERC20);
-        usdcToken = (await ERC20Mintable.deploy('USDC Coin', 'USDC', DECIMALS)) as ERC20Mintable;
+        usdcToken = (await ERC20MintableContract.deploy('USDC Coin', 'USDC', DECIMALS)) as ERC20;
         const ATokenMintableContract = await getContractFactory('ATokenMintable', contractsOwner);
 
         aToken = (await ATokenMintable.deploy(
