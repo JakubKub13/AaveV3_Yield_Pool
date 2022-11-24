@@ -158,7 +158,11 @@ contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
      * @param _spender -> address of the spender of the tokens
      * @param _amount -> amount of tokens to decrease allowance by
      */
-    function decreaseERC20Allowance(IERC20 _token, address _spender, uint256 _amount) external onlyManagerOrOwner {}
+    function decreaseERC20Allowance(IERC20 _token, address _spender, uint256 _amount) external onlyManagerOrOwner {
+        _requireNotAToken(address(_token));
+        _token.safeDecreaseAllowance(_spender, _amount);
+        emit DecresedERC20Allowance(msg.sender, _spender, _amount, _token);
+    }
 
     /**
      * @notice Calculates the number of asset tokens that user has in the yield pool
