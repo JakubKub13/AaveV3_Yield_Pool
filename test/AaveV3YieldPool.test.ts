@@ -103,4 +103,36 @@ describe("AaveV3YieldPool", function () {
             );
         }
     });
+
+    describe('Construction of contracts', function () {
+        beforeEach(() => {
+            constructorTest = true;
+        });
+
+        afterEach(() => {
+            constructorTest = false
+        });
+
+        it("Should deploy a new AaveV3YieldPool", async () => {
+            const aaveV3YieldPool = await deployAaveV3YieldPool(
+                aToken.address,
+                rewardsController.address,
+                poolAddressesProviderRegistry.address,
+                DECIMALS,
+                yieldPoolOwner.address
+            );
+
+            await expect(aaveV3YieldPool.deployTransaction)
+                .to.emit(aaveV3YieldPool, 'AaveV3YieldPoolInitialized')
+                .withArgs(
+                    aToken.address,
+                    rewardsController.address,
+                    poolAddressesProviderRegistry.address,
+                    'aUSDC yield',
+                    'aUSDCY',
+                    DECIMALS,
+                    yieldPoolOwner.address
+                );
+        });
+    })
 });
