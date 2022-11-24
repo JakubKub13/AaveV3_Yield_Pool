@@ -152,7 +152,7 @@ contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
 
     /**
      * @notice Decreases the allowance of ERC20 tokens other than aTokens held by this contract
-     * @dev Only owner of manager can call this function
+     * @dev Only owner or asset manager can call this function
      * @dev Current allowance should be computed off-chain to avoid any underflow
      * @param _token -> address of the ERC20 token to decrease allowance for
      * @param _spender -> address of the spender of the tokens
@@ -162,6 +162,21 @@ contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
         _requireNotAToken(address(_token));
         _token.safeDecreaseAllowance(_spender, _amount);
         emit DecresedERC20Allowance(msg.sender, _spender, _amount, _token);
+    }
+
+    /**
+     * @notice Increases the allowance of ERC20 Tokens other than aTokens held by this contract
+     * @dev Only owner or asset manager can call this function 
+     * @dev Allows other account or contract to withdraw funcs from yield pool
+     * @dev Current allowance should be computed off-chain to avoid any underflow
+     * @param _token -> address of the ERC20 token to increase allowance for
+     * @param _spender -> address of the spender of the tokens
+     * @param _amount -> amount of tokens to decrease allowance by
+     */
+    function increaseERC20Allowance(IERC20 _token, address _spender, uint256 _amount) external onlyManagerOrOwner {
+        _requireNotAToken(address(_token));
+        _token.safeIncreaseAllowance(_spender, _amount);
+        emit IncreasedERC20Allowance(msg.sender, _spender, _amount, _token);
     }
 
     /**
