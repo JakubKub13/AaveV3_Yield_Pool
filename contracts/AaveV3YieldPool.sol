@@ -180,6 +180,19 @@ contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
     }
 
     /**
+     * @notice Transfers ERC20 tokens other than aTokens from this contract to the recipient address
+     * @dev Only owner or asset manager can call this function 
+     * @param _token -> address of the ERC20 token to increase allowance for
+     * @param _to -> address where tokens will be sent
+     * @param _amount -> amount of tokens to decrease allowance by
+     */
+    function transferERC20(IERC20 _token, address _to, uint256 _amount) external onlyManagerOrOwner {
+        _requireNotAToken(address(_token));
+        _token.safeTransfer(_to, _amount);
+        emit TransferredERC20(address(this), _to, _amount, _token);
+    }
+
+    /**
      * @notice Calculates the number of asset tokens that user has in the yield pool
      * @param _shares Amount of shares
      * @param _fullShare Price of a full share
