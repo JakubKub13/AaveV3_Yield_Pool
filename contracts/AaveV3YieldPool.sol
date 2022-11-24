@@ -202,6 +202,10 @@ contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
         require(_shares > 0, "AaveV3YieldPool: Shares must be greater than zero");
     }
 
+    function _requireNotAToken(address _token) internal view {
+        require(_token != address(aToken), "AaveV3YieldPool: Token address can not be same as aToken address");
+    }
+
     /**
      * @notice Retrieves Aave pool address
      * @return Reference to Pool interface
