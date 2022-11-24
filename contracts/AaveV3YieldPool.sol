@@ -13,6 +13,11 @@ import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuar
 import { Manageable, Ownable } from "./Manageable.sol";
 import { IYieldPool } from "./IYieldPool.sol";
 
+/**
+ * @title Aave V3 Yield Pool contract 
+ * @notice Generates yield by depositing provided funds into Aave V3
+ */
+
 contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
