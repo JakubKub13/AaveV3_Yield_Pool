@@ -46,7 +46,7 @@ describe("AaveV3YieldPool", function () {
             rewardsControllerAddress,
             poolAddressesProviderRegistryAddress,
             'aUSDC yield',
-            'aUSDCY'
+            'aUSDCY',
             decimals,
             owner
         );
@@ -67,5 +67,40 @@ describe("AaveV3YieldPool", function () {
     const tokenToShares = async (token: BigNumber, yieldPoolTotalSupply: BigNumber) => {
         const totalShares = await aaveV3YieldPool.totalSupply();
         return token.mul(totalShares).div(yieldPoolTotalSupply);
-    }
+    };
+
+    beforeEach(async () => {
+        const { deployMockContract } = waffle;
+        [contractsOwner, yieldPoolOwner, wallet2, attacker] = await getSigners();
+        const ERC20MintableContract = await getContractFactory("ERC20Mintable", contractsOwner);
+        erc20Token = await deployMockContract(contractsOwner, SafeERC20);
+        usdcToken = (await ERC20Mintable.deploy('USDC Coin', 'USDC', DECIMALS)) as ERC20Mintable;
+        const ATokenMintableContract = await getContractFactory('ATokenMintable', contractsOwner);
+
+        aToken = (await ATokenMintable.deploy(
+            usdcToken.address,
+            'Aave interest bearing USDC',
+            'aUSDC',
+            DECIMALS,
+        )) as ATokenMintable;
+
+        const AavePoolContract = await getContractFactory('AavePool', contractsOwner);
+        pool = (await AavePoolContract.deploy(usdcToken.address, aToken.address)) as AavePool;
+        rewardsController = await deployMockContract(contractsOwner, IRewardsController);
+        poolAddressesProvider = await deployMockContract(contractsOwner, IPoolAddressesProvider);
+        poolAddressesProviderRegistry = await deployMockContract(contractsOwner, IPoolAddressesProviderRegistry);
+
+        await poolAddressesProvider.mock.getPool.returns(pool.address);
+        await poolAddressesProviderRegistry.mock.getAddressesProvidersList.returns([poolAddressesProvider.address]);
+
+        if(!constructorTest) {
+            aaveV3YieldPool = await deployAaveV3YieldPool(
+                aToken.address,
+                rewardsController.address,
+                poolAddressesProviderRegistry.address,
+                DECIMALS,
+                yieldPoolOwner.address
+            );
+        }
+    });
 });
