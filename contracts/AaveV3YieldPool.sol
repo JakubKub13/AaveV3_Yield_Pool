@@ -22,10 +22,13 @@ contract AaveV3YieldPool is ERC20, IYieldPool, Manageable, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
     // State vars
+    /// @notice Yield accumulationg Aave aToken address
     IAToken public immutable aToken;
     IRewardsController public immutable rewardsController;
     IPoolAddressesProviderRegistry public immutable poolAddressesProviderRegistry;
+    /// @notice Underlying asset token address
     address private immutable _tokenAddress;
+    /// @notice Underlying asset unit
     uint256 private immutable _tokenUnit;
     uint8 private immutable _decimals;
     uint256 private constant ADDRESSES_PROVIDER_ID = uint256(0);
