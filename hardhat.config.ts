@@ -9,14 +9,14 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY || "privatKey"
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || ""
 const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY || ""
 const MAINNET_RPC_URL = process.env.MAINNET_RPC_URL || ""
-const OP_MAINNET_RPC_URL = process.env.OP_MAINNET_RPC_URL || ""
+const POLYGON_MAINNET_RPC_URL = process.env.POLYGON_MAINNET_RPC_URL || ""
 
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
   networks: {
     hardhat: {
       forking: {
-        url: OP_MAINNET_RPC_URL
+        url: POLYGON_MAINNET_RPC_URL
       },
       chainId: 31337,
       allowUnlimitedContractSize: true
@@ -42,8 +42,8 @@ const config: HardhatUserConfig = {
     ],
   },
   etherscan: {
-    apiKey: ETHERSCAN_API_KEY,
-    //apiKey: POLYGONSCAN_API_KEY
+    //apiKey: ETHERSCAN_API_KEY,
+    apiKey: POLYGONSCAN_API_KEY
   },
   gasReporter: {
     enabled: true,
