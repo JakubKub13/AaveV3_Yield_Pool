@@ -30,6 +30,42 @@ describe("AaveV3YieldPool", function () {
     let aaveV3YieldPool: AaveV3YieldPool
     let erc20Token: MockContract;
     let usdcToken: ERC20Mintable;
-    
+
     let constructorTest = false;
-})
+
+    const deployAaveV3YieldPool = async (
+        aTokenAddress: string,
+        rewardsControllerAddress: string,
+        poolAddressesProviderRegistryAddress: string,
+        decimals: number,
+        owner: string,
+    ): Promise<AaveV3YieldPool> => {
+        const AaveV3YieldPool = (await ethers.getContractFactory("AaveV3YieldPool")) as AaveV3YieldPool__factory;
+        return await AaveV3YieldPool.deploy(
+            aTokenAddress,
+            rewardsControllerAddress,
+            poolAddressesProviderRegistryAddress,
+            'aUSDC yield',
+            'aUSDCY'
+            decimals,
+            owner
+        );
+    };
+
+    const supplyTokenTo = async (user: SignerWithAddress, amount: BigNumber) => {
+        const userAddress = user.address;
+        await usdcToken.mint(userAddress, amount);
+        await usdcToken.connect(user).approve(aaveV3YieldPool.address, MaxUint256);
+        await aaveV3YieldPool.connect(user).supplyTokenTo(amount, userAddress);
+    };
+
+    const sharesTokenTo = async (shares: BigNumber, yieldPoolTotalSupply: BigNumber) => {
+        const totalShares = await aaveV3YieldPool.totalSupply();
+        return shares.mul(yieldPoolTotalSupply).div(totalShares);
+    };
+
+    const tokenToShares = async (token: BigNumber, yieldPoolTotalSupply: BigNumber) => {
+        const totalShares = await aaveV3YieldPool.totalSupply();
+        return token.mul(totalShares).div(yieldPoolTotalSupply);
+    }
+});
